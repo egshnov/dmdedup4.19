@@ -1,11 +1,11 @@
-obj-m += dm-dedup.o
+KDIR:= /lib/modules/$(shell uname -r)/build
 
-dm-dedup-objs := dm-dedup-cbt.o dm-dedup-hash.o dm-dedup-ram.o dm-dedup-check.o dm-dedup-rw.o dm-dedup-target.o
-
-EXTRA_CFLAGS := -Idrivers/md
+PWD := $(shell pwd)
 
 all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
+install:
+	$(MAKE) -C $(KDIR) M=$(PWD) INSTALL_MOD_DIR=extra modules_install
+	depmod -a

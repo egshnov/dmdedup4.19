@@ -1,7 +1,18 @@
-*.ko
-*.o
+# Настройки ide
+*.vscode
+*.clang-format
+
+#Следы сборки
 *.cmd
-Module.symvers
-dm-dedup.mod.c
-modules.order
-.tmp_versions/
+*.mod
+*.d
+*.ko
+*.mod.c
+*.mod.o
+*.o
+*.symvers
+*.order
+
+#вспомгательные скрипты
+#счетчик строк
+*.VSCodeCounter

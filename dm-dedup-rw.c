@@ -55,15 +55,15 @@ static int fetch_whole_block(struct dedup_config *dc,
 	where.sector = pbn;
 	where.count = dc->sectors_per_block;
 
-	iorq.bi_op = REQ_OP_READ;
-	iorq.bi_op_flags = 0;
+	iorq.bi_opf = REQ_OP_READ;
+	//iorq.bi_opf_flags = 0; //deprecated
 	iorq.mem.type = DM_IO_PAGE_LIST;
 	iorq.mem.ptr.pl = pl;
 	iorq.mem.offset = 0;
 	iorq.notify.fn = NULL;
 	iorq.client = dc->io_client;
 
-	return dm_io(&iorq, 1, &where, &error_bits);
+	return dm_io(&iorq, 1, &where, &error_bits, IOPRIO_DEFAULT);
 }
 
 /*
@@ -84,7 +84,7 @@ static int merge_data(struct dedup_config *dc, struct page *page,
 	/* Relative offset in terms of sector size */
 	position = sector_div(bi_sector, dc->sectors_per_block);
 
-	if (!page || !bio_page(bio)) {
+	if (page == NULL || bio_page(bio) == NULL) {
 		err = -EINVAL;
 		goto out;
 	}
@@ -153,16 +153,19 @@ static struct bio *create_bio(struct dedup_config *dc,
 	struct bio *clone;
 	struct page *page;
 
-	clone = bio_kmalloc(GFP_NOIO, 1);
+	//clone = bio_kmalloc(GFP_NOIO, 1);
+	clone = bio_alloc_clone(bio->bi_bdev,bio, GFP_NOIO, &dc->bs);
 	if (!clone)
 		goto out;
-	clone->bi_disk = bio->bi_disk;
-	clone->bi_partno = bio->bi_partno;
-	clone->bi_opf = bio->bi_opf;
+
+	// clone->bi_disk = bio->bi_disk;
+	// clone->bi_partno = bio->bi_partno;
+	// clone->bi_opf = bio->bi_opf;
 
 	clone->bi_iter.bi_sector = compute_sector(bio, dc);
 	clone->bi_private = bio;  /* for later completion */
 	clone->bi_end_io = my_endio;
+
 
 	page = alloc_pages(GFP_NOIO, 0);
         //DMINFO("\nallocated page crete bio %llx",(unsigned long)page_address(page));

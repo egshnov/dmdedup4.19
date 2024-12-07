@@ -579,7 +579,7 @@ static int get_refcount_cowbtree(struct metadata *md, uint64_t blockn)
  * (tombstone) or not.  We check if every byte in the
  * entry holds the value of DELETED_ENTRY.
  */
-bool is_deleted_entry(const char *ptr, uint32_t length)
+static bool is_deleted_entry(const char *ptr, uint32_t length)
 {
 	int i = 0;
 
@@ -1086,7 +1086,7 @@ badtree:
 	return (struct kvstore *)kvs;
 }
 
-int get_private_data_cowbtree(struct metadata *md, void **data, uint32_t size)
+static int get_private_data_cowbtree(struct metadata *md, void **data, uint32_t size)
 {
 	if (size > sizeof(md->private_data))
 		return -1;
@@ -1095,7 +1095,7 @@ int get_private_data_cowbtree(struct metadata *md, void **data, uint32_t size)
 	return 0;
 }
 
-int set_private_data_cowbtree(struct metadata *md, void *data, uint32_t size)
+static int set_private_data_cowbtree(struct metadata *md, void *data, uint32_t size)
 {
 	if (size > sizeof(md->private_data))
 		return -1;

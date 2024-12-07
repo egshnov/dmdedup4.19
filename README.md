@@ -7,6 +7,16 @@ Every write coming to a dm-dedup instance is deduplicated against previously wri
 For datasets that contain many duplicates scattered across the disk (e.g., virtual machine disk images, backups, home directory servers) deduplication provides a significant amount of space savings.  
 Dm-dedup implements fixed block-size deduplication and supports pluggable backends to manage its metadata.
 
+Uasge
+=====
+```
+make
+modprobe dm-bufio
+sudo insmod dm-dedup.ko
+sudo ./startup.sh
+sudo dd if=input.txt of=/dev/mapper/mydedup oflag=direct bs=4K count=128
+sudo dd of=output.txt if=/dev/mapper/mydedup iflag=direct bs=4K count=128
+```
 
 Construction Parameters
 ===============
